@@ -11,30 +11,39 @@ row4 = st.columns(3)
 with row1[0]:
     age = st.number_input("Age", min_value=18, max_value=100, step=1)
 with row1[1]:
-    income = st.number_input("Income", min_value=1000, max_value=10000000, step=1000)
+    income = st.number_input("Income", min_value=0, max_value=1200000)
 with row1[2]:
-    loan_amount = st.number_input("Loan Amount", min_value=1000, max_value=10000000, step=1000)
+    loan_amount = st.number_input("Loan_Amount", min_value=0, max_value=25600000)
+
+loan_to_income_ratio = loan_amount / income if income > 0 else 0
 
 with row2[0]:
-    loan_tenure = st.number_input("Loan Tenure (months)", min_value=6, max_value=360, step=1)
+    st.text("Loan_to_income_ratio:")
+    st.text(f"{loan_to_income_ratio:.2f}")  # display as text field
 with row2[1]:
-    avg_dpd = st.number_input("Average DPD (Days Past Due)", min_value=0, max_value=1000, step=1)
+    loan_tenure = st.number_input("Loan Tenure", min_value=0, max_value=100, step=1, value=36)
 with row2[2]:
-    delinquency_ratio = st.number_input("Delinquency Ratio", min_value=0.0, max_value=1.0, step=0.01, format="%.2f")
+    avg_dpd = st.number_input("Avg_Dpd", min_value=0, max_value=100, step=1, value=20)
 
 with row3[0]:
-    credit_utilization = st.number_input("Credit Utilization Ratio", min_value=0.0, max_value=1.0, step=0.01,
-                                         format="%.2f")
+    delinquency_ratio = st.number_input("Delinquency Ratio", min_value=0, max_value=100, step=1, value=30)
 with row3[1]:
-    credit_score = st.number_input("Credit Score", min_value=300, max_value=900, step=1)
+    credit_utilization_ratio = st.number_input("Credit Utilization Ratio", min_value=0, max_value=100, step=1, value=30)
 with row3[2]:
-    num_credit_inquiries = st.number_input("Number of Credit Inquiries", min_value=0, max_value=100, step=1)
+    num_open_accounts = st.number_input("Open Loan Accounts", min_value=1, max_value=4, step=1, value=2)
 
 with row4[0]:
-    employment_years = st.number_input("Years of Employment", min_value=0, max_value=50, step=1)
+    residence_type = st.selectbox("Residence Type", ['Owned', 'Rented', 'Mortgage'])
+with row4[1]:
+    loan_purpose = st.selectbox("Loan Purpose", ["Education", "Home", "Auto", "Personal"])
+with row4[2]:
+    loan_type = st.selectbox("Loan Type", ["Unsecured", "Secured"])
 
-if st.button("Predict Credit Risk"):
-    result = predict(age, income, loan_amount, loan_tenure, avg_dpd, delinquency_ratio,
-                     credit_utilization, credit_score, num_credit_inquiries, employment_years)
-
-    st.success(f"Credit Risk Prediction: {result}")
+if st.button("Calculate_Risk"):
+    probability, credit_score, rating = predict(
+        age, income, loan_amount, loan_tenure, avg_dpd, delinquency_ratio,
+        credit_utilization_ratio, num_open_accounts, residence_type, loan_purpose, loan_type
+    )
+    st.write(f"Default Probability: {probability:.2%}")
+    st.write(f"Credit score: {credit_score}")
+    st.write(f"Rating: {rating}")
